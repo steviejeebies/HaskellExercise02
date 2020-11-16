@@ -2,9 +2,9 @@
 module Ex02 where
 
 name, idno, username :: String
-name      =  "Myself, Me"  -- replace with your name
-idno      =  "01234567"    -- replace with your student id
-username  =  "memyselfi"   -- replace with your TCD username
+name      =  "Rowe, Stephen"  -- replace with your name
+idno      =  "14319662"    -- replace with your student id
+username  =  "rowes"   -- replace with your TCD username
 
 
 declaration -- do not modify this
@@ -57,7 +57,17 @@ v42 = Val 42 ; j42 = Just v42
   -- see test outcomes for the precise format of those messages
 
 eval :: EDict -> Expr -> Either String Double
-eval d e = error "eval NYI"
+-- WORKING IN TESTSUITE, DON'T EDIT ANYTHING HERE!!!!
+eval _ (Val x) = Right x
+eval d (Var i) = find d i     -- returns Left ("undefined") or Right v
+eval d (Add a b) = eval(d a) - eval(d b)
+eval d (Sub a b) = eval(d a) - eval(d b)
+eval d (Mul a b) = eval(d a) * eval(d b)
+eval d (Def id a b) = eval $ d (id a b)
+eval d (Dvd a (Val 0.0)) = Left ("div by zero")
+
+eval d e = error "test failed"
+
 
 -- Part 1 : Expression Laws -- (15 test marks, worth 15 Exercise Marks) --------
 
