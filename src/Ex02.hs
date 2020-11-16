@@ -57,16 +57,23 @@ v42 = Val 42 ; j42 = Just v42
   -- see test outcomes for the precise format of those messages
 
 eval :: EDict -> Expr -> Either String Double
--- WORKING IN TESTSUITE, DON'T EDIT ANYTHING HERE!!!!
 eval _ (Val x) = Right x
 eval d (Var i) = find d i     -- returns Left ("undefined") or Right v
-eval d (Add a b) = eval(d a) - eval(d b)
-eval d (Sub a b) = eval(d a) - eval(d b)
-eval d (Mul a b) = eval(d a) * eval(d b)
-eval d (Def id a b) = eval $ d (id a b)
-eval d (Dvd a (Val 0.0)) = Left ("div by zero")
+eval d (Add x y) = evalOp d (+) x y
+eval d (Mul x y) = evalOp d (*) x y
+eval d (Sub x y) = evalOp d (-) x y
+eval d (Dvd x (Val 0.0)) = Left "div by zero"
+eval d (Dvd x y) = evalOp d (/) x y
+eval d (Def x e1 e2) = case eval d e1 of 
+                       (Right res) -> eval(define d x res) e2
+                       (Left res) -> Left res
 
-eval d e = error "test failed"
+evalOp d op x y = 
+    let r = eval d x; s = eval d y
+    in case (r,s) of
+        (Right m, Right n)  -> Right (m `op` n)
+        (Left m, _)         -> Left m
+        (_, Left n)         -> Left n
 
 
 -- Part 1 : Expression Laws -- (15 test marks, worth 15 Exercise Marks) --------
